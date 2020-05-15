@@ -18,18 +18,21 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
     <EditText
+        android:id="@+id/txtData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Quiz, RJ, etc"
         android:inputType="textMultiLine" />
 
     <Button
+        android:id="@+id/btnStore"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:text="Store"/>
 
     <ListView
+        android:id="@+id/mylist"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

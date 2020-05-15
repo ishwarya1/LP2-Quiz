@@ -20,10 +20,9 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnSubmit;
-    EditText etData;
+    Button btnStore;
+    EditText txtData;
     ListView lv;
-    ArrayList <ToDo> al;
     CustomAdapter ca;
 
     @Override
@@ -31,35 +30,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnSubmit = findViewById(R.id.btnInsert);
-        etData = findViewById(R.id.etData);
-        lv = findViewById(R.id.lv);
+        btnStore = findViewById(R.id.btnStore);
+        txtData = findViewById(R.id.txtData);
+        lv = findViewById(R.id.mylist);
 
-        al = new ArrayList<>();
-        ca = new CustomAdapter(this, R.layout.row, al);
-        lv.setAdapter(ca);
-
-        btnSubmit.setOnClickListener(new View.OnClickListener() {
+        btnStore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String data = etData.getText().toString();
-                String date = getDate();
-                if (!data.isEmpty()){
-                    DBHelper dbhelper = new DBHelper(MainActivity.this);
-                    dbhelper.insertToDo(data, date);
-                }
+                DBHelper db = new DBHelper(MainActivity.this);
+                db.insertToDoData(new TODO(0,getDate(),txtData.getText().toString().trim()));
+                db.close();
+                Toast.makeText(MainActivity.this, "Stored", Toast.LENGTH_SHORT).show();
+                txtData.setText("");
+                loadValues();
             }
         });
 
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ToDo n = al.get(position);
-                Intent i = new Intent(MainActivity.this, ModifyActivity.class);
-                i.putExtra("todo", n);
-                startActivity(i);
-            }
-        });
+
     }
 
     protected String getDate(){
@@ -81,12 +68,18 @@ public class MainActivity extends AppCompatActivity {
         DBHelper dbhelper = new DBHelper(this);
         switch (item.getItemId()) {
             case R.id.mnuRefresh:
-                al.clear();
-                al.addAll(dbhelper.getToDo());
-                ca.notifyDataSetChanged();
+                loadValues();
                 return true;
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void loadValues() {
+        DBHelper db = new DBHelper(MainActivity.this);
+        ArrayList<TODO> data = db.getDetails();
+        ca = new CustomAdapter(MainActivity.this,  data);
+        lv.setAdapter(ca);
+        db.close();
     }
 }
