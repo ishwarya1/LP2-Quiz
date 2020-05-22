@@ -3,5 +3,5 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:title="Load all from DB" android:id="@+id/mnuRefresh" />
-
+    <item android:title="Load recent 10 from DB" android:id="@+id/mnuRecent" />
 </menu>

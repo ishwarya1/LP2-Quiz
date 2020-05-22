@@ -20,11 +20,12 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static int loadFlag=-1;
     Button btnStore;
     EditText txtData;
     ListView lv;
     CustomAdapter ca;
-
+    ArrayList<TODO> data;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +34,12 @@ public class MainActivity extends AppCompatActivity {
         btnStore = findViewById(R.id.btnStore);
         txtData = findViewById(R.id.txtData);
         lv = findViewById(R.id.mylist);
+        data=new ArrayList<>();
+
+
+
+
+
 
         btnStore.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,6 +50,18 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Stored", Toast.LENGTH_SHORT).show();
                 txtData.setText("");
                 loadValues();
+            }
+        });
+
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
+
+                Intent it=new Intent(MainActivity.this,UpdateDeleteActivity.class);
+                TODO selectedItemPosition = data.get(pos);
+                it.putExtra("listItem",selectedItemPosition);
+                startActivity(it);
             }
         });
 
@@ -70,16 +89,38 @@ public class MainActivity extends AppCompatActivity {
             case R.id.mnuRefresh:
                 loadValues();
                 return true;
+            case R.id.mnuRecent:
+                load10Values();
+                return true;
 
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadValues() {
+    private void load10Values() {
+        data.clear();
         DBHelper db = new DBHelper(MainActivity.this);
-        ArrayList<TODO> data = db.getDetails();
+        data = db.getTop10Details();
         ca = new CustomAdapter(MainActivity.this,  data);
         lv.setAdapter(ca);
         db.close();
+    }
+
+    private void loadValues() {
+        data.clear();
+        DBHelper db = new DBHelper(MainActivity.this);
+        data = db.getDetails();
+        ca = new CustomAdapter(MainActivity.this,  data);
+        lv.setAdapter(ca);
+        db.close();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if(loadFlag==1)
+        {
+            loadValues();
+        }
     }
 }

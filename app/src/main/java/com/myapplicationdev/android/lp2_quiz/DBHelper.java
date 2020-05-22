@@ -67,6 +67,18 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 
+	public String updatetodoDetails(TODO todo) {
+		try {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.execSQL("update todo set data='" + todo.getData() + "' where _id='" + todo.getId() + "'");
+			db.close();
+
+			return "Record updated successfully..";
+		}catch (Exception e)
+		{
+			return "Failed";
+		}
+	}
 
 	public void insertToDoData(TODO todo) {
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -75,5 +87,44 @@ public class DBHelper extends SQLiteOpenHelper {
 		values.put(COLUMN_data, todo.getData());
 		db.insert(TABLE_NAME, null, values);
 		db.close();
+	}
+
+	public ArrayList<TODO> getTop10Details() {
+		ArrayList<TODO> notes = new ArrayList<TODO>();
+		String selectQuery = "SELECT " + COLUMN_ID + ", "
+				+ COLUMN_date + ", "
+				+ COLUMN_data
+				+ " FROM " + TABLE_NAME+" LIMIT 10";
+
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+
+		if (cursor.moveToFirst()) {
+			do {
+				int id = cursor.getInt(0);
+				String date = cursor.getString(1);
+				String data = cursor.getString(2);
+				TODO obj = new TODO(id, date, data);
+				notes.add(obj);
+			} while (cursor.moveToNext());
+		}
+		cursor.close();
+		db.close();
+		return notes;
+
+	}
+
+	public String deletetodoDetails(TODO todo) {
+
+		try {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.execSQL("delete from todo where _id='"+todo.getId()+"'");
+			db.close();
+
+			return "Record deleted successfully..";
+		}catch (Exception e)
+		{
+			return "Failed";
+		}
 	}
 }

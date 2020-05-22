@@ -1,6 +1,8 @@
 package com.myapplicationdev.android.lp2_quiz;
 
-public class TODO {
+import java.io.Serializable;
+
+public class TODO implements Serializable {
     int id;
     String date;
     String data;
